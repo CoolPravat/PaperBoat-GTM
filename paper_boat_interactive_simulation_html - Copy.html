@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PaperBoat GT vs GTM — Interactive Simulation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --oxford:#0b1e3f; /* Oxford Blue */
+      --maroon:#7b0d1e; /* Maroon accent */
+      --ink:#0f172a;    /* text */
+      --muted:#6b7280;  /* gray */
+      --bg:#f7f7fb;     /* light */
+      --card:#ffffff;   /* white */
+      --soft:#eef2ff;   /* soft indigo tint */
+    }
+    html,body{height:100%}
+    body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; color:var(--ink); background:linear-gradient(180deg,#f7f8fd 0%, #f3f5ff 100%)}
+    .app{display:grid; grid-template-columns: 280px 1fr; min-height:100vh}
+    .sidebar{background:linear-gradient(180deg,var(--oxford),#142956); color:white; padding:28px 20px; position:sticky; top:0; height:100vh; box-shadow: 6px 0 20px rgba(9,13,33,.25)}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px}
+    .brand .dot{width:14px; height:14px; border-radius:50%; background: radial-gradient(circle at 35% 35%, #ffced7, #cf3048 60%, #7b0d1e 100%); box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+    .muted{color:#c6d0ff}
+    .menu{margin-top:24px; display:flex; flex-direction:column; gap:10px}
+    .step{padding:10px 12px; border-radius:12px; line-height:1.2; display:flex; align-items:center; gap:10px}
+    .step .idx{width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:700; background:rgba(255,255,255,.12)}
+    .step.active{background:rgba(255,255,255,.14)}
+    .step.done{opacity:.85}
+    .progress{margin-top:16px; background:rgba(255,255,255,.15); border-radius:999px; height:8px; position:relative}
+    .bar{position:absolute; left:0; top:0; bottom:0; width:0; background:linear-gradient(90deg,#ff7b8a,#ffb86b); border-radius:999px; transition:width .5s}
+    .content{padding:36px 40px 60px}
+    .container{max-width:1100px; margin:0 auto}
+    .title{font-size:28px; font-weight:800; letter-spacing:.2px; color:var(--oxford)}
+    .subtitle{color:var(--muted); margin-top:6px}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#fff; box-shadow:0 6px 24px rgba(11,30,63,.08); font-size:12px; color:#4b5563}
+    .card{background:var(--card); border-radius:18px; padding:22px; box-shadow:0 8px 40px rgba(12, 20, 44, .08); border:1px solid rgba(12, 20, 44, .06)}
+    .row{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
+    .choices{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:14px}
+    .chip{padding:14px 14px; border-radius:14px; background:#fff; border:1px solid #eaecf5; cursor:pointer; transition:transform .06s ease, box-shadow .2s}
+    .chip:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(11,30,63,.08)}
+    .h{font-weight:700; color:var(--oxford)}
+    .feedback{margin-top:12px; padding:14px; border-radius:12px; border:1px dashed rgba(11,30,63,.15); background:linear-gradient(180deg,#ffffff, #fbfdff)}
+    .footer{display:flex; gap:10px; justify-content:flex-end; margin-top:16px}
+    .btn{appearance:none; border:none; background:var(--oxford); color:white; padding:12px 14px; border-radius:12px; font-weight:700; cursor:pointer; box-shadow:0 12px 24px rgba(11,30,63,.20)}
+    .btn.ghost{background:#fff; color:var(--oxford); border:1px solid rgba(11,30,63,.2); box-shadow:none}
+    .btn.maroon{background:var(--maroon)}
+    .btn[disabled]{opacity:.5; cursor:not-allowed; box-shadow:none; filter:saturate(0.5)}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight:700; font-size:11px; background:#111827; color:#fff; padding:4px 8px; border-radius:6px}
+    .notice{padding:12px 14px; background:linear-gradient(90deg, rgba(123,13,30,.06), rgba(11,30,63,.06)); border-left:4px solid var(--maroon); border-radius:12px}
+    .hidden{display:none}
+    .mini{font-size:12px; color:var(--muted)}
+    .rubric{border-collapse:collapse; width:100%}
+    .rubric th,.rubric td{border:1px solid #e5e7eb; padding:10px; text-align:left}
+    .rubric th{background:#f9fafb}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="dot"></div><div>PaperBoat — <span class="muted">Channel Dilemma</span></div></div>
+    <div class="mini" style="margin-top:6px">Interactive Simulation</div>
+    <div class="progress" style="margin-top:16px"><div id="pbar" class="bar"></div></div>
+    <div class="menu" id="stepMenu"></div>
+    <div class="mini" style="margin-top:12px">Tips
+      <ul style="margin:6px 0 0 14px; padding:0 0 0 6px; line-height:1.6">
+        <li>Click a choice to reveal feedback</li>
+        <li>Use <span class="kbd">←</span>/<span class="kbd">→</span> to navigate</li>
+        <li><b>Reset</b> anytime to start fresh</li>
+      </ul>
+    </div>
+    <div class="footer" style="justify-content:flex-start; margin-top:14px"><button class="btn ghost" onclick="resetSim()">Reset Simulation</button></div>
+  </aside>
+
+  <main class="content">
+    <div class="container">
+      <div>
+        <div class="pill">Micro-Simulation PaperBoat GT-vs-GTM: reflect → conceptualise → experiment</div>
+        <h1 class="title" style="margin:12px 0 4px">Reflective Review — PaperBoat's Channel Strategy</h1>
+        <div class="subtitle">Identify the real bottleneck, choose a strategic path, and design a channel strategy.</div>
+      </div>
+      <div id="scene" style="margin-top:16px"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // =============== STATE & NAV ===============
+  const steps = [
+    { id:'S0', label:'Context & Primary Issue' },
+    { id:'S1', label:'GT vs GTM Choice' },
+    { id:'S1A', label:'Ops Levers (GT)' },
+    { id:'S1B', label:'GTM Segments' },
+    { id:'S2B', label:'Urban Millennials' },
+    { id:'S3B', label:'Crafted Experiences' },
+    { id:'S4', label:'Pilot Builder & Rubric' },
+    { id:'END', label:'Review & Download' },
+  ];
+
+  let state = JSON.parse(localStorage.getItem('pb_state')||'null') || {
+    current:'S0',
+    visited:{ S0:true },
+    picks:{},
+    seen:{}
+  };
+  const save = () => localStorage.setItem('pb_state', JSON.stringify(state));
+
+  const el = (s)=>document.querySelector(s);
+  const scene = el('#scene');
+
+  window.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowRight') next();
+    if(e.key==='ArrowLeft') back();
+  });
+
+  function progress(){
+    const idx = steps.findIndex(s=>s.id===state.current);
+    const frac = Math.max(0, idx)/(steps.length-1);
+    el('#pbar').style.width = (frac*100)+'%';
+    el('#stepMenu').innerHTML = steps.map((s,i)=>{
+      const active = s.id===state.current? 'active':'';
+      const done = state.visited[s.id] && s.id!==state.current? 'done':'';
+      return `<div class="step ${active} ${done}"><div class="idx">${i+1}</div><div><div style="font-weight:700">${s.label}</div><div class="mini">${s.id}</div></div></div>`
+    }).join('');
+  }
+  function go(id){ state.current=id; state.visited[id]=true; save(); render(); }
+  function back(){ const i=steps.findIndex(s=>s.id===state.current); go(steps[Math.max(0,i-1)].id); }
+  function next(){ const i=steps.findIndex(s=>s.id===state.current); go(steps[Math.min(steps.length-1,i+1)].id); }
+  function resetSim(){ state={ current:'S0', visited:{S0:true}, picks:{}, seen:{} }; save(); render(); }
+
+  // =============== HELPERS ===============
+  function opt(ns, key, val, title, fb){
+    const sel = state.picks[key]===val;
+    const safeFb = (fb||'').replace(/`/g,'\\`');
+    return `<div class="chip" onclick="onChoice('${ns||''}','${key}','${val}', \`${safeFb}\`)"><div class="h">${title}</div><div class="mini">${sel? 'Selected' : 'Click to view feedback'}</div></div>`;
+  }
+  function onChoice(ns,key,val,fb){
+    // record pick
+    state.picks[key]=val; save();
+
+    // track seen options per scene for S3B requirement (use plain object for persistence safety)
+    const sc = state.current;
+    state.seen[sc] = state.seen[sc] || {};
+    state.seen[sc][val] = true;
+    save();
+
+    // feedback boxes per scene
+    let fbBox=null;
+    if(sc==='S0') fbBox = el('#s0fb');
+    if(sc==='S1A') fbBox = el('#opsFb');
+    if(sc==='S1B') fbBox = el('#s1bfb');
+    if(sc==='S2B') fbBox = el('#s2bfb');
+    if(sc==='S3B') fbBox = el('#cxFb');
+    if(fbBox){ fbBox.classList.remove('hidden'); fbBox.innerHTML = fb; }
+
+    // gating logic by scene
+    if(sc==='S0'){
+      const ok = state.picks.primary==='channel';
+      const btn = el('#s0next'); if(btn){ btn.disabled = !ok; btn.classList.toggle('maroon', ok); }
+      return; // stay on S0
+    }
+
+    if(sc==='S1A'){
+      const ok = state.picks.ops==='turns';
+      const btn = el('#s1anext'); if(btn){ btn.disabled = !ok; btn.classList.toggle('maroon', ok); }
+      return; // stay on S1A
+    }
+
+    if(sc==='S1B'){
+      const ok = state.picks.segment==='millennials';
+      const btn = el('#s1bnext'); if(btn){ btn.disabled = !ok; btn.classList.toggle('maroon', ok); }
+      return; // stay on S1B
+    }
+
+    if(sc==='S2B'){
+      const ok = state.picks.vp==='crafted';
+      const btn = el('#s2bnext'); if(btn){ btn.disabled = !ok; btn.classList.toggle('maroon', ok); }
+      return; // stay on S2B
+    }
+
+    if(sc==='S3B'){
+      const required = ['popup','ar','storybox','creators','kiosks'];
+      const seen = state.seen['S3B'] || {};
+      const seenAll = required.every(x=>!!seen[x]);
+      const btn = el('#s3bnext'); if(btn){ btn.disabled = !seenAll; btn.classList.toggle('maroon', seenAll); }
+      return; // stay on S3B
+    }
+
+    // default: navigate if ns provided
+    if(ns){ go(ns); } else { render(); }
+  }
+
+  function downloadText(text, filename){
+    const blob = new Blob([text], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url);
+  }
+  function escapeHtml(s){ return String(s).replace(/[&<>\"]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // =============== SCENES ===============
+  const S0 = ()=>{
+    return `
+      <div class="card">
+        <div class="pill">Step 1 · Diagnose</div>
+        <h2>Context — PaperBoat's Situation</h2>
+        <p class="mini">The firm is faciong flat growth in its current kirana-driven distribution. Challenges: limited reach, premium pricing, nostalgia vs modern positioning tension, navigating logistics for regional flavours, packaging constraints, and rising competion in the healthy-beverage market.</p>
+        <div class="notice" style="margin:12px 0">What is the <b>primary issue</b> here?</div>
+        <div class="choices">
+          ${opt('',  'primary','consumers',   'Consumer preferences',           '✔️ Nostalgia connects emotionally, but new-age consumers seek convenience and healthier alternatives<br>💡 The deeper issue lies in <b>reach</b> and <b>conversation</b>, not tastes alone.')}
+          ${opt('',  'primary','logistics',   'Complex logistics',              '✔️ Regional flavours and short shelf life make logistics complex.<br>💡 Logistics pain is amplified by the kirana channel model with weak cold-chain and feedback loops.')}
+          ${opt('',  'primary','competition', 'Competition in healthy segment', '✔️ The market is getting crowded with new juice and wellness brands.<br>💡 Yet brands that win often have sharper <b>GTM design</b>, not just better recipes.')}
+          ${opt('', 'primary','channel', 'Current channel’s limitations', '🎯 Correct — over-reliance on kirana limits visibility and learning.<br>💡 This bottleneck prevents PaperBoat from experimenting with modern D2C or experiential touchpoints.​')}
+${opt('', 'primary','price', 'High price / low demand', '⚠️ Price perception matters, but PaperBoat retains a loyal base even at a premium.<br>💡 But the core constraint is <b>accessibility</b> & <b>availability</b>, not willingness to pay.')}
+${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick — pouches do signal nostalgia but pose logistical challenges.<br>💡 So, the root cause still maps back to <b>distribution limitations</b>.')}
+        </div>
+        <div id="s0fb" class="feedback hidden"></div>
+        <div class="footer">
+          <button id="s0next" class="btn" onclick="go('S1')" disabled>Continue</button>
+        </div>
+      </div>`;
+  };
+
+  const S1 = ()=>`
+    <div class="card">
+      <div class="pill">Please Choose a Strategic Path</div>
+      <h2>For channel dilemma at PaperBoat </h2>
+      <div class="row">
+        <div class="card"><div class="h">A. Deepen physical reach (Distribution focus)</div><p class="mini">Improve visibility/availability in GT; depends on coverage, productivity, margins.</p><div class="footer"><button class="btn" onclick="go('S1A')">Ops Levers</button></div></div>
+        <div class="card"><div class="h">B. Redesign GTM </div><p class="mini">Pivot to engagement-led growth; rethink how and where to engage with (new) target customers, but first pick a segment.</p><div class="footer"><button class="btn" onclick="go('S1B')">Choose Segment</button></div></div>
+      </div>
+    </div>`;
+
+  const S1A = ()=>`
+    <div class=\"card\">
+      <div class=\"pill\">GT Ops - scaling within general trade could help improve visibility and availability.​ 💡 However, growth will depend on how smartly PaperBoat manages coverage, productivity, and margins in a cluttered kirana ecosystem.</div>
+      <h2>Which lever will you select?</h2>
+      <div class=\"choices\">
+        ${opt('', 'ops','coverage','Coverage expansion','✔️ More outlets, more visibility. ⚠️ but, ensure premium positioning and - fit of the outlets to avoid dilution and diminishing returns.')}
+        ${opt('', 'ops','fill','Fill rate improvement','💡 Service-level uplift is good, but shelf is scarce in kirana stores — so, rotation may unlock more growth than fill rate.')}
+        ${opt('', 'ops','route','Route productivity','🔄 Reduces cost-to-serve; still the challenge of enhancing demand/pull at POS remains.')}
+        ${opt('', 'ops','margin','Trade margins','⚠️ Can spike trials in short-term; it enhances cost also risks eroding premium positioning if overused.')}
+        ${opt('', 'ops','turns','Stock turns','💰 Right instinct — improving rotation ensures both liquidity and shelf freshness. This requires better demand forecasting and retailer engagement.')}
+      </div>
+      <div id=\"opsFb\" class=\"feedback hidden\"></div>
+      <div class=\"footer\">
+        <button class=\"btn ghost\" onclick=\"go('S1')\">Back</button>
+        <button id=\"s1anext\" class=\"btn\" onclick=\"go('S1B')\" disabled>Continue</button>
+      </div>
+    </div>`;
+
+  const S1B = ()=>`
+    <div class=\"card\">
+      <div class=\"pill\">GTM you’re moving from availability-driven to engagement-driven growth.  💡 Now the key question is which segment this GTM should serve and what their unmet needs are</div>
+      <h2>First select a segment, but think why?</h2>
+      <div class=\"choices\">
+        ${opt('', 'segment','millennials','Urban millennials','🎯 Strong fit — they value nostalgia wrapped in convenience. Digital-first engagement could deepen loyalty.')}
+        ${opt('', 'segment','travel','Travellers / airport consumers','✈️ Excellent niche for experiential sampling. But will have limited volume to justify investment unless the experience goes viral and drives D2C.')}
+        ${opt('', 'segment','family','Health-conscious families','💚 This market is getting crowded, needs strong health credential based narrative; thus one has to do more than mere nostalgic claims and packaging cues.')}
+        ${opt('', 'segment','genz','Students / Gen Z','⚡ Promising future consumers, yet their low spend and high variety-seeking may not sustain a premium model without bundles.​')}
+        ${opt('', 'segment','nri','NRIs / diaspora','🌍 Emotionally aligned segment — D2C subscriptions or gifting boxes could work, though shipping logistics and shelf life remain constraints.')}
+      </div>
+      <div id=\"s1bfb\" class=\"feedback hidden\"></div>
+      <div class=\"footer\"><button class=\"btn ghost\" onclick=\"go('S1')\">Back</button><button id=\"s1bnext\" class=\"btn\" onclick=\"go('S2B')\" disabled>Continue</button></div>
+    </div>`;
+
+  const S2B = ()=>`
+    <div class=\"card\">
+      <div class=\"pill\">PaperBoat selected Urban-Millennials, — young professionals and families in metros who value authenticity, convenience, and health. </div>
+      <h2>Select Value Proposition for Urban-Millennials</h2>
+      <div class=\"choices\">
+        ${opt('', 'vp','nostalgia','Taste of Nostalgia, Reimagined for Today','✔️ Strong emotional anchor — nostalgia connects generations. 💡 But differentiation is needed for new usage occasions (e.g., “midday comfort,” “screen‐break sip”) beyond nostalgia storytelling.​')}
+        ${opt('', 'vp','fusion','Wholesome Hydration with Cultural Twist','💚 Wellness + Indianness — this appeals to millennials seeking local authenticity over global smoothies.​ 💡 However, PaperBoat must back health claims credibly (less sugar, natural sourcing) or risk being perceived as “sentimental but sugary.')}
+        ${opt('', 'vp','heritage','Ready‑to‑Sip Heritage for Conscious Gen','🌱 Make the iconic pouch sustainable (recycle/refill); Heritage and sustainability angle - evokes roots while aligning with eco‐conscious millennial values.')}
+        ${opt('', 'vp','crafted','Crafted Experiences, Not Just Beverages','🎯 Experience-led engagement — urban millennials crave experiences that connect stories, music, and community.​ 💡 Differentiation via experiential marketing: nostalgia pop‐ups, airport tasting pods, or creator collaborations — not price or flavour.')}
+        ${opt('', 'vp','wellness','India’s Healthier, Happier Drink','🩵 Competitive space — everyone from Raw Pressery to Epigamia uses health narrative.​ 💡 Edge must come from purposeful storytelling, not claims alone.')}
+      </div>
+      <div id=\"s2bfb\" class=\"feedback hidden\"></div>
+      <div class=\"footer\"><button class=\"btn ghost\" onclick=\"go('S1B')\">Back</button><button id=\"s2bnext\" class=\"btn\" onclick=\"go('S3B')\" disabled>Channel Options</button></div>
+    </div>`;
+
+  const S3B = ()=>`
+    <div class=\"card\">
+      <div class=\"pill\">Can you deliver Crafted Experience to the Urban-Millennials​</div>
+      <h2>What should PaperBoat go ahead?</h2>
+      <div class=\"choices\">
+        ${opt('', 'cx','popup','Pop‑up “Nostalgia Cafés”','☕ transforms PaperBoat from a product into a space for travelling down the memory lane.​ 💡 To scale, partner with travel hubs or co‐brand with cafés; the risk is high cost per engagement unless it ties into retail sales or subscriptions.')}
+        ${opt('', 'cx','ar','AR‑enabled nostalgic packaging','📱 Perfect for digitally native millennials — blends play and emotion.​ 💡 But — poor UX could make it gimmicky. Build a “#SipAndRemember” storytelling campaign that grows over time.')}
+        ${opt('', 'cx','storybox','D2C “StoryBox” subscription','📦 Excellent for building ritual and retention. It extends nostalgia into collectability.​ 💡 The challenge is logistics and freshness — PaperBoat must test small‐batch curation to sustain perceived exclusivity.​')}
+        ${opt('', 'cx','creators','Indie creator collaborations','🎬 Smart amplification — connects emotional storytelling to authentic voices.​ 💡 Differentiate by microcollabs (e.g., nostalgia art, animation shorts, 90s food memories) instead of generic influencer pushes.')}
+${opt('', 'cx','kiosks','Experiential vending kiosks','🏢 Blends convenience with brand theatre — the machine itself can narrate mini‐stories (“Press to relive your childhood summer”).​ 💡 But needs premium design and reliable tech; could be piloted in coworking spaces or tech parks for maximum symbolic value.')}
+      </div>
+      <div id=\"cxFb\" class=\"feedback hidden\"></div>
+      <div class=\"footer\"><button class=\"btn ghost\" onclick=\"go('S2B')\">Back</button><button id=\"s3bnext\" class=\"btn\" onclick=\"go('S4')\" disabled>Build Pilot →</button></div>
+    </div>`;
+
+  const S4 = ()=>{
+    const vp = state.picks.vp||'(pick earlier)';
+    const cx = state.picks.cx||'(pick earlier)';
+    return `
+      <div class="card">
+        <div class="pill">Propose a Channel Design, Rubric</div>
+        <h2>Design channel for Crafted Experience</h2>
+        <p class="mini"><b>Chosen Value Proposition:</b> ${vp}<br><b>Experience Direction:</b> ${cx}</p>
+        <div class="feedback">This step is <b>display‑only</b>. Planning details (channels, flow, roles) will be completed <b>offline</b>.</div>
+        <h3 style="margin:18px 0 6px">Assessment Rubric</h3>
+        <table class="rubric">
+          <thead><tr><th>Criterion</th><th>Description</th><th>Weight</th><th>Excellence Indicators</th></tr></thead>
+          <tbody>
+            <tr><td>Strategic Fit</td><td> Design channel to deliver crafted‑experience to millennial </td><td>25%</td><td>Clear emotional–strategic alignment</td></tr>
+            <tr><td>Channel Logic & Design</td><td>Awareness → Engagement → Conversion → Retention flow</td><td>25%</td><td>Seamless path; data loops</td></tr>
+            <tr><td>Creativity & Feasibility</td><td>Novel but executable (partners, timeline, MVP)</td><td>25%</td><td>Operational realism</td></tr>
+            <tr><td>Presentation & Reflection</td><td>Narrative & trade‑offs</td><td>25%</td><td>Persuasive story; limits & next steps</td></tr>
+          </tbody>
+        </table>
+        <div class="footer"><button class="btn ghost" onclick="go('S3B')">Back</button><button class="btn" onclick="go('END')">Finish</button><button class="btn ghost" onclick="go('S0')">Start Over</button>
+      </div>`;
+  };
+
+  const END = ()=>{
+    const summary = {
+      primary: state.picks.primary,
+      path: state.picks.segment? 'GTM' : 'GT',
+      segment: state.picks.segment || null,
+      vp: state.picks.vp || null,
+      experience: state.picks.cx || null
+    };
+    return `
+      <div class="card">
+        <div class="pill">Review</div>
+        <h3><a href="https://forms.office.com/r/jz1wN9kShS" target="_blank">Upload Your PaperBoat GTM & Channel Design</a></h3>
+        <div class="footer"><button class="btn ghost" onclick="go('S0')">Start Over</button></div>
+      </div>`;
+  };
+
+  // =============== RENDER ROOT ===============
+  function render(){
+    progress();
+    const map = { S0, S1, S1A, S1B, S2B, S3B, S4, END };
+    scene.innerHTML = map[state.current]();
+  }
+  // Always start fresh at S0 on load
+  resetSim();
+
+  // =============== TESTS (console) ===============
+  ;(function runSelfTests(){
+    try{
+      console.assert(typeof S0 === 'function' && typeof S1A==='function' && typeof S1B==='function' && typeof S2B==='function' && typeof S3B==='function', 'Renderer functions exist');
+
+      // S0 gating
+      state.current='S0'; state.picks={}; state.seen={}; render();
+      let btn = document.querySelector('#s0next');
+      console.assert(btn && btn.disabled===true, 'S0: Continue disabled initially');
+      onChoice('', 'primary','price',''); btn = document.querySelector('#s0next');
+      console.assert(btn.disabled===true, 'S0: wrong pick keeps disabled');
+      onChoice('', 'primary','channel',''); btn = document.querySelector('#s0next');
+      console.assert(btn.disabled===false, 'S0: correct pick enables');
+
+      // S1A gating (option 5 required)
+      go('S1A'); onChoice('', 'ops','coverage','');
+      let a = document.querySelector('#s1anext'); console.assert(a && a.disabled===true, 'S1A: disabled after non-5 pick');
+      onChoice('', 'ops','turns',''); a = document.querySelector('#s1anext');
+      console.assert(a.disabled===false, 'S1A: enables after option 5 (turns)');
+
+      // S1B gating (option 1 required)
+      go('S1B'); onChoice('', 'segment','genz','');
+      let b = document.querySelector('#s1bnext'); console.assert(b && b.disabled===true, 'S1B: disabled after non-1 pick');
+      onChoice('', 'segment','millennials',''); b = document.querySelector('#s1bnext');
+      console.assert(b.disabled===false, 'S1B: enables after option 1 (millennials)');
+
+      // S2B gating (option 4 required)
+      go('S2B'); onChoice('', 'vp','nostalgia','');
+      let c = document.querySelector('#s2bnext'); console.assert(c && c.disabled===true, 'S2B: disabled after non-4 pick');
+      onChoice('', 'vp','crafted',''); c = document.querySelector('#s2bnext');
+      console.assert(c.disabled===false, 'S2B: enables after option 4 (crafted)');
+
+      // S3B gating (all must be clicked, duplicates shouldn't unlock)
+      go('S3B');
+      onChoice('', 'cx','popup',''); onChoice('', 'cx','popup',''); // duplicate clicks
+      let d = document.querySelector('#s3bnext'); console.assert(d && d.disabled===true, 'S3B: still disabled with duplicates only');
+      ;['ar','storybox','creators'].forEach(v=>onChoice('', 'cx', v, ''));
+      d = document.querySelector('#s3bnext'); console.assert(d.disabled===true, 'S3B: still disabled until all 5 unique');
+      onChoice('', 'cx','kiosks',''); d = document.querySelector('#s3bnext');
+      console.assert(d.disabled===false, 'S3B: enables after all 5 viewed');
+
+      // Navigation sanity: go() should not reset to S0
+      go('S1'); console.assert(state.current==='S1', 'Navigation: go() moves forward without resetting');
+
+      // Reset should return to S0
+      resetSim(); console.assert(state.current==='S0', 'Reset: returns to S0');
+
+      console.log('%cAll gating & nav tests passed','color:green;font-weight:bold');
+    }catch(e){ console.error('Self-test failure:', e); }
+  })();
+</script>
+
+<div style="text-align: center;">
+    <img src="https://i.ibb.co/SwmYP3HG/Screenshot-2025-11-10-212926.png" alt="Screenshot-2025-11-10-212926" border="0">
+</div>
+
+<footer style="text-align: center;padding:14px 18px;color:var(--muted)">PaperBoat Channel Dilemma | Students' Version | © Dr. Pravat, GIM, Goa </footer>
+</body>
+</html>
