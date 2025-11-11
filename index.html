@@ -208,7 +208,7 @@
       <div class="card">
         <div class="pill">Step 1 · Diagnose</div>
         <h2>Context — PaperBoat's Situation</h2>
-        <p class="mini">The firm is facing flat growth in its current kirana-driven distribution. Challenges: limited reach, premium pricing, tension between nostalgia and modern positioning, navigating logistics for regional flavors, packaging constraints, and rising competition in the healthy-beverage market.</p>
+        <p class="mini" style="font-size:14px;">The firm is facing flat growth in its current kirana-driven distribution. Challenges: limited reach, premium pricing, tension between nostalgia and modern positioning, navigating logistics for regional flavors, packaging constraints, and rising competition in the healthy-beverage market.</p>
         <div class="notice" style="margin:12px 0">What is the <b>primary issue</b> here?</div>
         <div class="choices">
           ${opt('',  'primary','consumers',   'Consumer preferences',           '✔️ Nostalgia connects emotionally, but new-age consumers seek convenience and healthier alternatives<br>💡 The deeper issue lies in <b>reach</b> and <b>conversation</b>, not tastes alone.')}
@@ -227,7 +227,7 @@ ${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick 
 
   const S1 = ()=>`
     <div class="card">
-      <div class="pill">Please Choose a Strategic Path</div>
+      <div class="pill" style="font-size:18px;">Please Choose a Strategic Path</div>
       <h2>For channel dilemma at PaperBoat </h2>
       <div class="row">
         <div class="card"><div class="h">A. Deepen physical reach (Distribution focus)</div><p class="mini">Improve visibility/availability in GT; depends on coverage, productivity, margins.</p><div class="footer"><button class="btn" onclick="go('S1A')">Ops Levers</button></div></div>
@@ -237,7 +237,7 @@ ${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick 
 
   const S1A = ()=>`
     <div class=\"card\">
-      <div class=\"pill\">GT Ops - scaling within general trade could help improve visibility and availability.​ 💡 However, growth will depend on how smartly PaperBoat manages coverage, productivity, and margins in a cluttered kirana ecosystem.</div>
+      <div class=\"pill\" style="font-size:18px;">GT Ops - scaling within general trade could help improve visibility and availability.​ 💡 However, growth will depend on how smartly PaperBoat manages coverage, productivity, and margins in a cluttered kirana ecosystem.</div>
       <h2>Which lever will you select?</h2>
       <div class=\"choices\">
         ${opt('', 'ops','coverage','Coverage expansion','✔️ More outlets, more visibility. ⚠️ but, ensure premium positioning and - fit of the outlets to avoid dilution and diminishing returns.')}
@@ -255,7 +255,7 @@ ${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick 
 
   const S1B = ()=>`
     <div class=\"card\">
-      <div class=\"pill\">GTM you’re moving from availability-driven to engagement-driven growth.  💡 Now the key question is which segment this GTM should serve and what their unmet needs are</div>
+      <div class=\"pill\" style="font-size:18px;">GTM you’re moving from availability-driven to engagement-driven growth.  💡 Now the key question is which segment this GTM should serve and what their unmet needs are</div>
       <h2>First select a segment, but think why?</h2>
       <div class=\"choices\">
         ${opt('', 'segment','millennials','Urban millennials','🎯 Strong fit — they value nostalgia wrapped in convenience. Digital-first engagement could deepen loyalty.')}
@@ -270,7 +270,7 @@ ${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick 
 
   const S2B = ()=>`
     <div class=\"card\">
-      <div class=\"pill\">PaperBoat selected Urban-Millennials, — young professionals and families in metros who value authenticity, convenience, and health. </div>
+      <div class=\"pill\" style="font-size:18px;">PaperBoat selected Urban-Millennials, — young professionals and families in metros who value authenticity, convenience, and health. </div>
       <h2>Select Value Proposition for Urban-Millennials</h2>
       <div class=\"choices\">
         ${opt('', 'vp','nostalgia','Taste of Nostalgia, Reimagined for Today','✔️ Strong emotional anchor — nostalgia connects generations. 💡 But differentiation is needed for new usage occasions (e.g., “midday comfort,” “screen‐break sip”) beyond nostalgia storytelling.​')}
@@ -285,7 +285,7 @@ ${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick 
 
   const S3B = ()=>`
     <div class=\"card\">
-      <div class=\"pill\">Can you deliver Crafted Experience to the Urban-Millennials​</div>
+      <div class=\"pill\" style="font-size:18px;">Can you deliver Crafted Experience to the Urban-Millennials​</div>
       <h2>What should PaperBoat go ahead?</h2>
       <div class=\"choices\">
         ${opt('', 'cx','popup','Pop‑up “Nostalgia Cafés”','☕ transforms PaperBoat from a product into a space for travelling down the memory lane.​ 💡 To scale, partner with travel hubs or co‐brand with cafés; the risk is high cost per engagement unless it ties into retail sales or subscriptions.')}
@@ -303,9 +303,9 @@ ${opt('', 'cx','kiosks','Experiential vending kiosks','🏢 Blends convenience w
     const cx = state.picks.cx||'(It is given, by PaperBoat)';
     return `
       <div class="card">
-        <div class="pill">Propose Channel Design, for Rubric</div>
+        <div class="pill" style="font-size:18px;">Propose Channel Design</div>
         <h2>Design channel for Crafted Experience</h2>
-        <p class="mini"><b>Now design a GTM for the Urban-Millennials:</b> ${cx}<br><b>Value Proposition "Crafted Nostalgic Experience"</b> ${vp}</p>
+        <p class="mini" style="font-size:18px;"><b>Now design a GTM for the Urban-Millennials:</b> ${cx}<br><b>Value Proposition "Crafted Nostalgic Experience"</b> ${vp}</p>
         <div class="feedback"><b>In offline mode</b>, plan yourself, then as a group discuss: Role of the <b>new channel</b>, list <b>channel partners</b>, and <b>Channel flow diagram.</b> Note submission limit is <b> 1-page, & use AI tools are allowed</b>.</div>
         <h3 style="margin:18px 0 6px">Assessment Rubric for the submission</h3>
         <table class="rubric">
