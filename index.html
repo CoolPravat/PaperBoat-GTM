@@ -72,18 +72,23 @@
     <div class="footer" style="justify-content:flex-start; margin-top:14px"><button class="btn ghost" onclick="resetSim()">Reset Simulation</button></div>
   </aside>
 
-  <main class="content">
-    <div class="container">
-      <div>
-        <div class="pill">Micro-Simulation PaperBoat GT-vs-GTM: reflect → conceptualise → experiment</div>
-        <h1 class="title" style="margin:12px 0 4px">Reflective Review — PaperBoat's Channel Strategy</h1>
-        <div class="subtitle">Identify the real bottleneck, choose a strategic path, and design a channel strategy.</div>
-      </div>
-      <div id="scene" style="margin-top:16px"></div>
+<main class="content" 
+      style="background-image: url('<img src="https://i.ibb.co/mnwsq79/Screenshot-2025-11-11-070808.png" alt="Screenshot-2025-11-11-070808" border="0">');
+             background-size: contain;
+             background-repeat: no-repeat;
+             background-position: center;
+             background-attachment: fixed;
+             min-height: 100vh;">
+  <div class="container" style="text-align:center;">
+    <div>
+      <div class="pill">Micro-Simulation PaperBoat GT-vs-GTM: reflect → conceptualise → experiment</div>
+      <h1 class="title" style="margin:12px 0 4px">Reflective Review — PaperBoat's Channel Strategy</h1>
+      <div class="subtitle">Identify the real bottleneck, choose a strategic path, and design a channel strategy.</div>
     </div>
-  </main>
-</div>
-
+    <div id="scene" style="margin-top:16px"></div>
+  </div>
+</main>
+ 
 <script>
   // =============== STATE & NAV ===============
   const steps = [
@@ -392,10 +397,6 @@ ${opt('', 'cx','kiosks','Experiential vending kiosks','🏢 Blends convenience w
     }catch(e){ console.error('Self-test failure:', e); }
   })();
 </script>
-
-<div style="text-align: center;">
-    <img src="https://i.ibb.co/9HLZcSbP/Screenshot-2025-11-10-220653.png" alt="Screenshot-2025-11-10-220653" border="0">
-</div>
 
 <footer style="text-align: center;padding:14px 18px;color:var(--muted)">PaperBoat Channel Dilemma | Students' Version | © Dr. Pravat, GIM, Goa </footer>
 </body>
