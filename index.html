@@ -98,8 +98,8 @@
     { id:'S1B', label:'GTM Segments' },
     { id:'S2B', label:'Urban Millennials' },
     { id:'S3B', label:'Crafted Experiences' },
-    { id:'S4', label:'Pilot Builder & Rubric' },
-    { id:'END', label:'Review & Download' },
+    { id:'S4', label:'Design a GTM' },
+    { id:'END', label:'Review & Upload' },
   ];
 
   let state = JSON.parse(localStorage.getItem('pb_state')||'null') || {
@@ -231,7 +231,7 @@ ${opt('', 'primary','pack', 'Packaging/design limits', '✔️ Interesting pick 
       <h2>For channel dilemma at PaperBoat </h2>
       <div class="row">
         <div class="card"><div class="h">A. Deepen physical reach (Distribution focus)</div><p class="mini">Improve visibility/availability in GT; depends on coverage, productivity, margins.</p><div class="footer"><button class="btn" onclick="go('S1A')">Ops Levers</button></div></div>
-        <div class="card"><div class="h">B. Redesign GTM </div><p class="mini">Pivot to engagement-led growth; rethink how and where to engage with (new) target customers, but first pick a segment.</p><div class="footer"><button class="btn" onclick="go('S1B')">Choose Segment</button></div></div>
+        <div class="card"><div class="h">B. Redesign Go-To-Market </div><p class="mini">Pivot to engagement-led growth; rethink how and where to engage with (new) target customers, but first pick a segment.</p><div class="footer"><button class="btn" onclick="go('S1B')">Choose Segment</button></div></div>
       </div>
     </div>`;
 
